@@ -43,17 +43,17 @@ class Category extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   children: <Widget>[
                     _images("assets/images/health.png", "Health",
-                        healthHeadlines, context),
+                        healthHeadlines, context, 1),
                     _images("assets/images/business.jpg", "Business",
-                        businessHeadlines, context),
+                        businessHeadlines, context, 2),
                     _images("assets/images/entertainment.png", "Entertainment",
-                        entertainmentHeadlines, context),
+                        entertainmentHeadlines, context, 3),
                     _images("assets/images/science1.jpg", "Science",
-                        scienceHeadlines, context),
+                        scienceHeadlines, context, 4),
                     _images("assets/images/technology.jpg", "Tech",
-                        technologyHeadlines, context),
+                        technologyHeadlines, context, 5),
                     _images("assets/images/sports.jpg", "Sports",
-                        sportsHeadlines, context),
+                        sportsHeadlines, context, 6),
                   ],
                 ),
               )
@@ -61,13 +61,13 @@ class Category extends StatelessWidget {
   }
 }
 
-Widget _images(imagePath, name, url, context) {
+Widget _images(imagePath, name, url, context, index) {
   return GestureDetector(
     onTap: () {
       print("tapped");
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => CategoryNews(name, url)),
+        MaterialPageRoute(builder: (context) => CategoryNews(name, url, index)),
       );
     },
     child: Container(

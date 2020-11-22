@@ -8,7 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class NewsDetails extends StatelessWidget {
   final NewsModel particularNews;
-  NewsDetails(this.particularNews);
+  final connectionStatus;
+  NewsDetails({this.particularNews, this.connectionStatus});
 
   _launchURL() async {
     final url = particularNews.url;
@@ -25,7 +26,9 @@ class NewsDetails extends StatelessWidget {
       children: [
         Container(
           child: Card(
-            child: Image.network(particularNews.image),
+            child: connectionStatus == 'none'
+                ? Image.asset("assets/images/news.jpg")
+                : Image.network(particularNews.image),
           ),
         ),
         Container(

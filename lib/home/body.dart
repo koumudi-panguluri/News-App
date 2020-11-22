@@ -1,16 +1,22 @@
 import 'dart:convert';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+
 import 'package:news/constants.dart';
+import 'package:news/home/hive.dart';
 import 'package:news/home/topBar.dart';
 import 'package:news/home/topHeadlines.dart';
 import 'package:news/home/newsApis.dart';
 import 'package:http/http.dart' as http;
 import 'package:news/models/newsModel.dart';
-import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:news/home/flutterNotifications.dart';
 
 class Body extends StatefulWidget {
+  final String payload;
+  Body({this.payload});
   @override
   _BodyState createState() => _BodyState();
 }
@@ -19,46 +25,45 @@ class _BodyState extends State<Body> {
   final topHeadlinesUrl = topHeadlines;
   List<NewsModel> allTopHeadlines = [];
   final imageUrl = image;
-  Box box;
+  var connectionStatus;
 
-  Future openBox() async {
-    var dir = await getApplicationDocumentsDirectory();
-    Hive.init(dir.path);
-    box = await Hive.openBox('data');
-    return;
-  }
+  //declaration, put, get
 
-  Future putDataToHive(newsHeadlines) async {
-    await box.clear();
-    allTopHeadlines = [];
-    for (var data in newsHeadlines) {
-      box.add(data);
-    }
-  }
-
-  void getDataFromHive() {
-    var newsData;
-    final List<NewsModel> topHeadlines = [];
-    allTopHeadlines = [];
-    newsData = box.toMap().values.toList();
-    print("news list ${newsData.length}");
-    (newsData as List).map((value) {
-      return NewsModel.getData(topHeadlines, value, image);
-    }).toList();
-    setState(() {
-      allTopHeadlines = topHeadlines;
-    });
+  void noNetwork(context) {
+    final scaff = Scaffold.of(context);
+    scaff.showSnackBar(SnackBar(
+      content: Text("Please check your Network connection"),
+      duration: Duration(seconds: 5),
+      action: SnackBarAction(
+        label: 'UNDO',
+        onPressed: scaff.hideCurrentSnackBar,
+      ),
+    ));
   }
 
   void initState() {
     super.initState();
+    FlutterNotifications.getNotificationInitialization();
     getHeadlines();
   }
 
   Future<void> getHeadlines() async {
-    await openBox();
+    await HiveDB.openBox();
+    tz.initializeTimeZones();
 
-    getDataFromHive();
+    var connectionResult = await Connectivity().checkConnectivity();
+    if (connectionResult == ConnectivityResult.none) {
+      connectionStatus = 'none';
+      noNetwork(context);
+    } else {
+      connectionStatus = 'connected';
+    }
+
+    var headlinesHive = HiveDB.getDataFromHive(allTopHeadlines, 0);
+    print("topheadlines in body ${headlinesHive.length}");
+    setState(() {
+      allTopHeadlines = headlinesHive;
+    });
     return http.get(topHeadlinesUrl).then((response) {
       var headlines;
 
@@ -67,8 +72,29 @@ class _BodyState extends State<Body> {
       headlines = json.decode(response.body);
       print("headlines from front page ${headlines["articles"].length}");
       //offline caching
-      putDataToHive(headlines["articles"]);
-      getDataFromHive();
+      HiveDB.putDataToHive(headlines["articles"], allTopHeadlines, 0)
+          .then((value) {
+        var headlinesHive = HiveDB.getDataFromHive(allTopHeadlines, 0);
+        print("topheadlines in body ${headlinesHive.length}");
+        setState(() {
+          allTopHeadlines = headlinesHive;
+          if (headlines != null && headlines["articles"].length > 0) {
+            if (headlines["articles"][0]["title"] != allTopHeadlines[0].title) {
+              print("data updated");
+
+              FlutterNotifications.flutterAlarm();
+
+              print(
+                  "data ${headlines["articles"][0]["title"]} and ${allTopHeadlines[0].title}");
+            } else {
+              print("old data");
+
+              print(
+                  "data ${headlines["articles"][0]["title"]} and ${allTopHeadlines[0].title}");
+            }
+          }
+        });
+      });
 
       // (headlines["articles"] as List).map((value) {
       //   return NewsModel.getData(topHeadlines, value, image);
@@ -89,7 +115,10 @@ class _BodyState extends State<Body> {
         children: [
           TopBar(size),
           allTopHeadlines.isNotEmpty
-              ? TopHeadlines(size, allTopHeadlines)
+              ? TopHeadlines(
+                  size: size,
+                  headlinesNews: allTopHeadlines,
+                  connectionStatus: connectionStatus)
               : Container(
                   margin: EdgeInsets.all(defaultPadding),
                   child: CircularProgressIndicator(

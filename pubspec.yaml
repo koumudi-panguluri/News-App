@@ -25,11 +25,16 @@ dependencies:
     sdk: flutter
   google_fonts: ^1.1.1
   http: ^0.12.2
-  url_launcher: ^5.7.10
-  share: ^0.6.5+4
-  hive: ^1.4.4+1
-  hive_flutter: ^0.3.1
-  path_provider: ^1.6.24
+  url_launcher: ^5.7.10                                  #to open url via browser
+  share: ^0.6.5+4                                        #share with any social media apps
+  hive: ^1.4.4+1                                         #local storage
+  hive_flutter: ^0.3.1                                   #local storage
+  path_provider: ^1.6.24                                 #path provider for hive
+  connectivity: ^2.0.1                                   #check network connection
+  flutter_local_notifications: ^3.0.1+4                  #flutter local
+  timezone: ^0.5.9                                       #local timezone for flutter scheduled notifications
+  workmanager: ^0.2.0                                    #app running in background
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -58,6 +63,7 @@ flutter:
     - assets/images/science1.jpg
     - assets/images/technology.jpg
     - assets/images/sports.jpg
+    - assets/images/news.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

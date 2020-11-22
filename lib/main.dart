@@ -2,12 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:news/constants.dart';
+import 'package:news/home/flutterNotifications.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'home/body.dart';
 
 void main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // Workmanager.initialize(
+  //   callbackDispatcher,
+  //   isInDebugMode: true,
+  // );
+  // Workmanager.registerOneOffTask("1", "myTask", inputData: {"data1": "value1"});
   await Hive.initFlutter();
   runApp(MyApp());
+}
+
+void callbackDispatcher() {
+  Workmanager.executeTask((task, inputData) {
+    print("Native called background task");
+    // FlutterNotifications.getNotificationInitialization();
+    // FlutterNotifications.flutterAlarm();
+    return Future.value(true);
+  });
 }
 
 class MyApp extends StatelessWidget {

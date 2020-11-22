@@ -11,9 +11,10 @@ import 'package:share/share.dart';
 class TopHeadlines extends StatelessWidget {
   final Size size;
   final List<NewsModel> headlinesNews;
+  final connectionStatus;
   final String appLink =
       "https://www.linkedin.com/in/panguluri-koumudi-411b21159/";
-  TopHeadlines(this.size, this.headlinesNews);
+  TopHeadlines({this.size, this.headlinesNews, this.connectionStatus});
 
   void _showDetails(context, news) {
     showDialog(
@@ -31,13 +32,17 @@ class TopHeadlines extends StatelessWidget {
                     color: textColor,
                     fontSize: 20,
                   ))),
-              actions: <Widget>[NewsDetails(news)],
+              actions: <Widget>[
+                NewsDetails(
+                    particularNews: news, connectionStatus: connectionStatus)
+              ],
             ));
   }
 
   @override
   Widget build(BuildContext context) {
-    print("each news ${headlinesNews.length} and ${headlinesNews[0].image}");
+    print(
+        "each news ${headlinesNews.length} and ${headlinesNews[0].image} and $connectionStatus");
     return Column(
         children: headlinesNews.map((news) {
       return Container(
@@ -47,7 +52,9 @@ class TopHeadlines extends StatelessWidget {
               Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
-                  Image.network(news.image),
+                  connectionStatus == 'none'
+                      ? Image.asset("assets/images/news.jpg")
+                      : Image.network(news.image),
                   Container(
                       color: Colors.white.withOpacity(0.85),
                       padding: EdgeInsets.only(
