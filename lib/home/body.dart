@@ -110,23 +110,32 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          TopBar(size),
-          allTopHeadlines.isNotEmpty
-              ? TopHeadlines(
-                  size: size,
-                  headlinesNews: allTopHeadlines,
-                  connectionStatus: connectionStatus)
-              : Container(
-                  margin: EdgeInsets.all(defaultPadding),
-                  child: CircularProgressIndicator(
-                    strokeWidth: 5,
-                  )),
-        ],
-      ),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          // title: Text(""),
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {},
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              TopBar(size),
+              allTopHeadlines.isNotEmpty
+                  ? TopHeadlines(
+                      size: size,
+                      headlinesNews: allTopHeadlines,
+                      connectionStatus: connectionStatus)
+                  : Container(
+                      margin: EdgeInsets.all(defaultPadding),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 5,
+                      )),
+            ],
+          ),
+        ));
   }
 }
 

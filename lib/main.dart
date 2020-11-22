@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:news/constants.dart';
-import 'package:news/home/flutterNotifications.dart';
+import 'package:news/home/home.dart';
 import 'package:workmanager/workmanager.dart';
-
-import 'home/body.dart';
 
 void main() async {
   // WidgetsFlutterBinding.ensureInitialized();
@@ -61,13 +59,13 @@ class _MyHomeState extends State<MyHome> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          // title: Text(widget.title),
+          title: Text(widget.title),
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {},
           ),
         ),
-        body: Body());
+        body: Home());
   }
 }
