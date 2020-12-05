@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import 'package:news/constants.dart';
 import 'package:news/home/hive.dart';
-import 'package:news/home/sidenav.dart';
 import 'package:news/home/topBar.dart';
 import 'package:news/home/topHeadlines.dart';
 import 'package:news/home/newsApis.dart';
@@ -112,19 +111,12 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-        drawer: SideNav(),
         appBar: AppBar(
           // title: Text(""),
           elevation: 0,
-          leading: FlatButton(
-            child: Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              print("clicked");
-              SideNav();
-            },
+          leading: IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {},
           ),
         ),
         body: SingleChildScrollView(

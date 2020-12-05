@@ -8,8 +8,7 @@ import 'package:news/home/register.dart';
 class Button extends StatelessWidget {
   final size;
   final text;
-  final Function submit;
-  Button({this.size, this.text, this.submit});
+  Button(this.size, this.text);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,38 +41,17 @@ class Button extends StatelessWidget {
                     break;
                   case 'Sign Up':
                     print("register");
-                    submit().then((value) => {
-                          if (value == "valid")
-                            {
-                              print("future value register $value"),
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Login()),
-                              )
-                            }
-                          else
-                            {
-                              print("future value register $value"),
-                            }
-                        });
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Login()),
+                    );
                     break;
                   case 'Sign In':
-                    print("login");
-                    submit().then((value) => {
-                          if (value == "valid")
-                            {
-                              print("future value login $value"),
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => Body()),
-                              )
-                            }
-                          else
-                            {
-                              print("future value register $value"),
-                            }
-                        });
+                    print("register");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Body()),
+                    );
                     break;
                   default:
                     Navigator.push(

@@ -1,16 +1,11 @@
 import 'dart:ui';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:news/constants.dart';
 import 'package:news/home/catergory.dart';
-import 'package:news/home/circularAvatar.dart';
 
 class TopBar extends StatelessWidget {
   final Size size;
   TopBar(this.size);
-  var totalLikes = 0;
-  var totalShares = 0;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,7 +25,7 @@ class TopBar extends StatelessWidget {
             _categoryTile(size),
             Column(
               children: [
-                CircularDisplay(size),
+                _circularDisplay(size),
                 Container(
                     padding: EdgeInsets.only(
                         left: size.width * 0.2,
@@ -50,44 +45,14 @@ class TopBar extends StatelessWidget {
                         left: size.width * 0.24,
                         right: size.width * 0.23,
                         top: size.height * 0.25 * 0.07),
-                    child: StreamBuilder(
-                      stream: FirebaseFirestore.instance
-                          .collection('newsDetails')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        // print("length ${snapshot.data.documents.length}");
-                        if (!snapshot.hasData)
-                          return Text("Loading, Please wait..!");
-                        else {
-                          totalLikes = 0;
-                          totalShares = 0;
-
-                          snapshot.data.documents.map((value) {
-                            if (value['userId'].toString() ==
-                                FirebaseAuth.instance.currentUser.uid) {
-                              print("match");
-                              if (value['likes'] != null) {
-                                totalLikes += 1;
-                                print("likes $totalLikes");
-                              } else if (value['shares'] != null) {
-                                totalShares += 1;
-                                print("shares $totalShares");
-                              }
-                            } else {
-                              print("not match");
-                            }
-                          }).toList();
-                        }
-                        return Row(
-                          children: [
-                            _trackerTitle(size, totalLikes.toString()),
-                            Spacer(
-                              flex: 9,
-                            ),
-                            _trackerTitle(size, totalShares.toString())
-                          ],
-                        );
-                      },
+                    child: Row(
+                      children: [
+                        _trackerTitle(size, "145"),
+                        Spacer(
+                          flex: 9,
+                        ),
+                        _trackerTitle(size, "152")
+                      ],
                     )),
               ],
             )
@@ -123,6 +88,22 @@ class TopBar extends StatelessWidget {
           ],
         ));
   }
+}
+
+Widget _circularDisplay(size) {
+  return Container(
+      padding: EdgeInsets.only(
+          left: size.width * 0.05,
+          right: size.width * 0.05,
+          top: (size.height * 0.25) - size.height * 0.24),
+      child: CircleAvatar(
+        radius: 35,
+        child: Text(
+          "K",
+          style: TextStyle(color: textColor, fontSize: 28),
+        ),
+        backgroundColor: Colors.white60,
+      ));
 }
 
 Widget _trackerTitle(size, name) {
