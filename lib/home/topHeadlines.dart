@@ -3,19 +3,26 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news/constants.dart';
+import 'package:news/home/firestore.dart';
 import 'package:news/home/newsDialog.dart';
 
 import 'package:news/models/newsModel.dart';
 import 'package:share/share.dart';
 
-class TopHeadlines extends StatelessWidget {
+class TopHeadlines extends StatefulWidget {
+  TopHeadlines({Key key, this.size, this.headlinesNews, this.connectionStatus})
+      : super(key: key);
   final Size size;
   final List<NewsModel> headlinesNews;
   final connectionStatus;
+  @override
+  TopHeadlinesState createState() => TopHeadlinesState();
+}
+
+class TopHeadlinesState extends State<TopHeadlines> {
   final String appLink =
       "https://www.linkedin.com/in/panguluri-koumudi-411b21159/";
-  TopHeadlines({this.size, this.headlinesNews, this.connectionStatus});
-
+  // bool _favorites = false;
   void _showDetails(context, news) {
     showDialog(
         context: context,
@@ -34,7 +41,8 @@ class TopHeadlines extends StatelessWidget {
                   ))),
               actions: <Widget>[
                 NewsDetails(
-                    particularNews: news, connectionStatus: connectionStatus)
+                    particularNews: news,
+                    connectionStatus: widget.connectionStatus)
               ],
             ));
   }
@@ -42,9 +50,10 @@ class TopHeadlines extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print(
-        "each news ${headlinesNews.length} and ${headlinesNews[0].image} and $connectionStatus");
+        "each news ${widget.headlinesNews.length} and ${widget.headlinesNews[0].image} and $widget.connectionStatus");
     return Column(
-        children: headlinesNews.map((news) {
+        children: widget.headlinesNews.map((news) {
+      // _favorites = false;
       return Container(
           margin: EdgeInsets.only(left: 10, right: 10, top: 10),
           child: Card(
@@ -52,7 +61,7 @@ class TopHeadlines extends StatelessWidget {
               Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
-                  connectionStatus == 'none'
+                  widget.connectionStatus == 'none'
                       ? Image.asset("assets/images/news.jpg")
                       : Image.network(news.image),
                   Container(
@@ -73,7 +82,10 @@ class TopHeadlines extends StatelessWidget {
                       onPressed: () {
                         print("clicked on share");
                         Share.share(
-                            "News from Koumi news app.\n${news.title}\n${news.url}\n\nFor furture news updates, please download $appLink");
+                                "News from Koumi news app.\n${news.title}\n${news.url}\n\nFor furture news updates, please download $appLink")
+                            .then((value) => {
+                                  setDetails(shares: news.title),
+                                });
                       }),
                   Spacer(flex: 5),
                   FlatButton(
@@ -89,7 +101,20 @@ class TopHeadlines extends StatelessWidget {
                   ),
                   Spacer(flex: 5),
                   IconButton(
-                      icon: Icon(Icons.bookmark_border), onPressed: () {}),
+                      icon: Icon(
+                        Icons.bookmark_border,
+                      ),
+                      onPressed: () {
+                        setDetails(likes: news.title);
+                        print("fav clicked");
+                        // setState(() {
+                        //   widget.headlinesNews.map((value) {
+                        //     if (value.id == news.id) {
+                        //       _favorites = true;
+                        //     }
+                        //   });
+                        // });
+                      }),
                 ],
               ),
             ]),

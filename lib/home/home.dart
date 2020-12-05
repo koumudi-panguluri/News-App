@@ -29,8 +29,8 @@ class Home extends StatelessWidget {
               width: size.width,
             ),
           ),
-          Button(size, "Login"),
-          Button(size, "Register"),
+          Button(size: size, text: "Login"),
+          Button(size: size, text: "Register"),
         ],
       ),
     );
