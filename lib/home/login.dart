@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,6 +7,39 @@ import 'package:news/home/buttons.dart';
 
 class Login extends StatelessWidget {
   final formKey = new GlobalKey<FormState>();
+  final loginEmailController = TextEditingController();
+  final loginPasswordController = TextEditingController();
+  String _email;
+  String _password;
+  String _submit() {
+    _email = loginEmailController.text;
+    _password = loginPasswordController.text;
+    if (formKey.currentState.validate()) {
+      print("value $_email, $_password,");
+      return "valid";
+    } else {
+      print("form invalid");
+      return "invalid";
+    }
+  }
+
+  Future<String> firebaseLogin() async {
+    if (_submit() == "valid") {
+      try {
+        var user = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: _email, password: _password);
+        print("user $user");
+        return "valid";
+      } catch (err) {
+        print("Error occured while login $err");
+        return "invalid";
+      }
+    } else {
+      print("form invalid");
+      return "invalid";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -43,15 +77,18 @@ class Login extends StatelessWidget {
                   key: formKey,
                   child: Column(
                     children: [
-                      _textFields("Email"),
+                      _textFields("Email", loginEmailController),
                       SizedBox(
                         height: 10,
                       ),
-                      _textFields("Password"),
+                      _textFields("Password", loginPasswordController),
                       SizedBox(
                         height: 10,
                       ),
-                      Button(size, "Sign In"),
+                      Button(
+                          size: size,
+                          text: "Sign In",
+                          submit: () => firebaseLogin())
                     ],
                   ),
                 ),
@@ -62,8 +99,37 @@ class Login extends StatelessWidget {
   }
 }
 
-Widget _textFields(text) {
+Widget _textFields(text, label) {
   return TextFormField(
+    controller: label,
+    obscureText: text == "Email" ? false : true,
+    validator: (value) {
+      if (value.isEmpty) {
+        switch (text) {
+          case "Email":
+            return 'Please enter your Email Id';
+            break;
+          case "Password":
+            return 'Please enter your Password';
+            break;
+        }
+      } else {
+        switch (text) {
+          case "Email":
+            RegExp emailRegExp = new RegExp(emailPattern);
+            if (!emailRegExp.hasMatch(value)) {
+              return 'Please enter proper Email Id';
+            }
+            break;
+          case "Password":
+            if (value.length < 6) {
+              return 'Password should be greater than 6 characters';
+            }
+            break;
+        }
+      }
+      return null;
+    },
     decoration: new InputDecoration(
         border: new OutlineInputBorder(
           borderRadius: const BorderRadius.all(
@@ -71,8 +137,8 @@ Widget _textFields(text) {
           ),
         ),
         filled: true,
-        hintStyle: new TextStyle(color: buttonColor, fontSize: 18),
-        hintText: text,
+        hintStyle: new TextStyle(color: Colors.grey, fontSize: 15),
+        hintText: text == "Email" ? "john@gmail.com" : text,
         fillColor: Colors.white70),
   );
 }

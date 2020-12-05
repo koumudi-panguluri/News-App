@@ -8,7 +8,8 @@ import 'package:news/home/register.dart';
 class Button extends StatelessWidget {
   final size;
   final text;
-  Button(this.size, this.text);
+  final Function submit;
+  Button({this.size, this.text, this.submit});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,17 +42,38 @@ class Button extends StatelessWidget {
                     break;
                   case 'Sign Up':
                     print("register");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Login()),
-                    );
+                    submit().then((value) => {
+                          if (value == "valid")
+                            {
+                              print("future value register $value"),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Login()),
+                              )
+                            }
+                          else
+                            {
+                              print("future value register $value"),
+                            }
+                        });
                     break;
                   case 'Sign In':
-                    print("register");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Body()),
-                    );
+                    print("login");
+                    submit().then((value) => {
+                          if (value == "valid")
+                            {
+                              print("future value login $value"),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => Body()),
+                              )
+                            }
+                          else
+                            {
+                              print("future value register $value"),
+                            }
+                        });
                     break;
                   default:
                     Navigator.push(
